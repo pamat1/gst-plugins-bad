@@ -1109,7 +1109,12 @@ gst_srt_object_wait_connect (GstSRTObject * srtobject,
 
   GST_DEBUG_OBJECT (srtobject->element, "Binding to %s (port: %d)",
       local_address, local_port);
-
+  
+  # Adding redundancy in case port is taken. Exclusively for udp holepunching.
+  int opval = 1;
+  setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opval, size(opval))
+   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opval, size(opval))
+    
   if (srt_bind (sock, bind_sa, bind_sa_len) == SRT_ERROR) {
     g_set_error (error, GST_RESOURCE_ERROR,
         GST_RESOURCE_ERROR_OPEN_READ_WRITE, "Cannot bind to %s:%d - %s",
